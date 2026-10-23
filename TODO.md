@@ -8,7 +8,7 @@
   - If grid is valid, show win message + offer user to play again
     - Otherwise, return them to title screen
 - Title Screen
-  - Very simple, just tap to play to start with
+  - New Game/Continue previous game
 
 ## Features I definitely want
 - Timer
