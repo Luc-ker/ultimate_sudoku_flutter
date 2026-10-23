@@ -2,6 +2,10 @@
 
 ## Core Game functionality
 - Notes
+  - Need to consider that Cell model from api doesn't have a notes field
+    - Could make new StatefulWidget?
+    - Or extend Cell class?
+    - Or even ditch API and re-write from ground up?
   - Clear when cell is filled
 - No validation until grid fully filled
   - Don't show errors, just show message that there is a mistake
@@ -28,10 +32,11 @@
 - Upgraded title screen
   - Allows you to navigate to settings modal
 - Validate incorrect moves
+- Undo/Redo move
 - Load in preset grid
 - Scan from image (uploaded image then camera)
   - Would prefer to use image processing techniques rather than AI/ML
-- 
+
 
 ## "Maybe" Features
 - Auto-notes

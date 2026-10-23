@@ -68,7 +68,7 @@ class SudokuGrid extends StatelessWidget {
                 splashColor: Colors.indigo,
                 hoverColor: Colors.indigoAccent,
                 focusColor: Colors.indigoAccent,
-                onTap: (cell.prefill() != true) ? () => onTap(index) : () {},
+                onTap: () => onTap(index),
                 child: Center(
                   child: Text(
                     number != 0 ? number.toString() : '',

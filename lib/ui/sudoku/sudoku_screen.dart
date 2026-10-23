@@ -1,10 +1,12 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:sudoku_api/sudoku_api.dart';
-import 'package:ultimate_sudoku_flutter/ui/viewmodel/sudoku_screen_state.dart';
-import 'package:ultimate_sudoku_flutter/ui/viewmodel/sudoku_screen_viewmodel.dart';
-import 'package:ultimate_sudoku_flutter/ui/widgets/sudoku_grid.dart';
-import 'package:ultimate_sudoku_flutter/ui/widgets/sudoku_numbers.dart';
+import 'package:ultimate_sudoku_flutter/models/fill_mode.dart';
+import 'package:ultimate_sudoku_flutter/ui/sudoku/viewmodel/sudoku_screen_state.dart';
+import 'package:ultimate_sudoku_flutter/ui/sudoku/viewmodel/sudoku_screen_viewmodel.dart';
+import 'package:ultimate_sudoku_flutter/ui/sudoku/widgets/fill_mode_switcher.dart';
+import 'package:ultimate_sudoku_flutter/ui/sudoku/widgets/sudoku_grid.dart';
+import 'package:ultimate_sudoku_flutter/ui/sudoku/widgets/sudoku_numbers.dart';
 
 class SudokuScreen extends StatelessWidget {
   final SudokuScreenViewModel viewModel = SudokuScreenViewModel();
@@ -46,15 +48,18 @@ class _SudokuScreenContentState extends State<SudokuScreenContent> {
           SudokuScreenStateLoading() => CircularProgressIndicator(),
           SudokuScreenStateSudoku(
             :final sudoku,
-            :final fillNumber,
+            :final selectedNumber,
+            :final fillMode,
             :final solved,
           ) =>
             _DataState(
               sudoku: sudoku,
-              selectedNumber: fillNumber,
+              selectedNumber: selectedNumber,
+              fillMode: fillMode,
               solved: solved,
               onCellTap: vm.fillCell,
-              onFillNumberTap: vm.selectFillNumber,
+              onFillModeTap: vm.switchFillMode,
+              selectFillNumberTap: vm.selectFillNumber,
             ),
           SudokuScreenStateError(:final message) => _ErrorState(
             errorMessage: message,
@@ -68,16 +73,20 @@ class _SudokuScreenContentState extends State<SudokuScreenContent> {
 class _DataState extends StatelessWidget {
   final Puzzle sudoku;
   final int selectedNumber;
+  final FillMode fillMode;
   final bool solved;
   final Function(int) onCellTap;
-  final Function(int) onFillNumberTap;
+  final Function(FillMode) onFillModeTap;
+  final Function(int) selectFillNumberTap;
 
   const _DataState({
     required this.sudoku,
     required this.selectedNumber,
+    required this.fillMode,
     required this.solved,
     required this.onCellTap,
-    required this.onFillNumberTap,
+    required this.onFillModeTap,
+    required this.selectFillNumberTap,
   });
 
   @override
@@ -89,18 +98,24 @@ class _DataState extends StatelessWidget {
           SudokuGrid(
             matrix: matrix,
             selectedNumber: selectedNumber,
-            onTap: !solved ? onCellTap : (_) {},
+            onTap: onCellTap,
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 20)),
-          SudokuNumbers(
-            selectedNumber: selectedNumber,
-            onTap: !solved ? onFillNumberTap : (_) {},
+          SliverList.list(
+            children: [
+              const SizedBox(height: 20),
+              FillModeSwitcher(currentFillMode: fillMode, onTap: onFillModeTap),
+              const SizedBox(height: 20),
+              SudokuNumbers(
+                selectedNumber: selectedNumber,
+                onTap: selectFillNumberTap,
+              ),
+              if (solved) const Text('You solved the Sudoku!'),
+            ],
           ),
-          if (solved) SliverToBoxAdapter(child: Text('You solved the Sudoku!')),
         ],
       );
     } else {
-      return Text('Sudoku grid couldn\'t be loaded :(');
+      return const Text('Sudoku grid couldn\'t be loaded :(');
     }
   }
 }
