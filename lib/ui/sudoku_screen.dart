@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:sudoku_api/sudoku_api.dart';
 import 'package:ultimate_sudoku_flutter/ui/viewmodel/sudoku_screen_state.dart';
 import 'package:ultimate_sudoku_flutter/ui/viewmodel/sudoku_screen_viewmodel.dart';
+import 'package:ultimate_sudoku_flutter/ui/widgets/sudoku_grid.dart';
+import 'package:ultimate_sudoku_flutter/ui/widgets/sudoku_numbers.dart';
 
 class SudokuScreen extends StatelessWidget {
   final SudokuScreenViewModel viewModel = SudokuScreenViewModel();
@@ -42,7 +44,18 @@ class _SudokuScreenContentState extends State<SudokuScreenContent> {
       builder: (BuildContext context, SudokuScreenViewModel vm, Widget? child) {
         return switch (vm.state) {
           SudokuScreenStateLoading() => CircularProgressIndicator(),
-          SudokuScreenStatePuzzle(:final sudoku) => _DataState(sudoku: sudoku),
+          SudokuScreenStateSudoku(
+            :final sudoku,
+            :final fillNumber,
+            :final solved,
+          ) =>
+            _DataState(
+              sudoku: sudoku,
+              selectedNumber: fillNumber,
+              solved: solved,
+              onCellTap: vm.fillCell,
+              onFillNumberTap: vm.selectFillNumber,
+            ),
           SudokuScreenStateError(:final message) => _ErrorState(
             errorMessage: message,
           ),
@@ -54,29 +67,40 @@ class _SudokuScreenContentState extends State<SudokuScreenContent> {
 
 class _DataState extends StatelessWidget {
   final Puzzle sudoku;
+  final int selectedNumber;
+  final bool solved;
+  final Function(int) onCellTap;
+  final Function(int) onFillNumberTap;
 
-  const _DataState({required this.sudoku});
+  const _DataState({
+    required this.sudoku,
+    required this.selectedNumber,
+    required this.solved,
+    required this.onCellTap,
+    required this.onFillNumberTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final matrix = sudoku.board()?.matrix();
     if (matrix != null) {
-      return Column(
-        children: List.generate(matrix.length, (int i) {
-          return Row(
-            children: List.generate(matrix.elementAt(i).length, (int j) {
-              return Expanded(
-                child: Text(
-                  matrix.elementAt(i).elementAt(j).getValue().toString(),
-                  textAlign: TextAlign.center,
-                ),
-              );
-            }),
-          );
-        }),
+      return CustomScrollView(
+        slivers: [
+          SudokuGrid(
+            matrix: matrix,
+            selectedNumber: selectedNumber,
+            onTap: !solved ? onCellTap : (_) {},
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 20)),
+          SudokuNumbers(
+            selectedNumber: selectedNumber,
+            onTap: !solved ? onFillNumberTap : (_) {},
+          ),
+          if (solved) SliverToBoxAdapter(child: Text('You solved the Sudoku!')),
+        ],
       );
     } else {
-      return Text(sudoku.toString());
+      return Text('Sudoku grid couldn\'t be loaded :(');
     }
   }
 }

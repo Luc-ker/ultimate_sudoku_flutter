@@ -8,8 +8,11 @@ sealed class SudokuScreenState with _$SudokuScreenState {
   const factory SudokuScreenState.loading(Puzzle sudoku) =
       SudokuScreenStateLoading;
 
-  const factory SudokuScreenState.sudoku(Puzzle sudoku) =
-      SudokuScreenStatePuzzle;
+  const factory SudokuScreenState.sudoku(
+    Puzzle sudoku,
+    int fillNumber,
+    bool solved,
+  ) = SudokuScreenStateSudoku;
 
   const factory SudokuScreenState.error(String message) =
       SudokuScreenStateError;
