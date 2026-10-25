@@ -1,12 +1,12 @@
 import 'package:material_ui/material_ui.dart';
 
 class SudokuNumbers extends StatelessWidget {
-  final int selectedNumber;
+  final int fillNumber;
   final Function(int) onTap;
 
   const SudokuNumbers({
     super.key,
-    required this.selectedNumber,
+    required this.fillNumber,
     required this.onTap,
   });
 
@@ -19,7 +19,7 @@ class SudokuNumbers extends StatelessWidget {
         children: List.generate(9, (int index) {
           return Expanded(
             child: Material(
-              color: (index + 1 == selectedNumber)
+              color: (index + 1 == fillNumber)
                   ? Colors.grey.shade500
                   : Colors.grey.shade200,
               child: InkWell(

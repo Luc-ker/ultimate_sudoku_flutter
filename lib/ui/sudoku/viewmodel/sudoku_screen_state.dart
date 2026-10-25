@@ -12,7 +12,7 @@ sealed class SudokuScreenState with _$SudokuScreenState {
 
   const factory SudokuScreenState.sudoku({
     required Puzzle sudoku,
-    @Default(0) int selectedNumber,
+    @Default(0) int fillNumber,
     @Default(false) bool solved,
     @Default(FillMode.normal) FillMode fillMode,
   }) = SudokuScreenStateSudoku;

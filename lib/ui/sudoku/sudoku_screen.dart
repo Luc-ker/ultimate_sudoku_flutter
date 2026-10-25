@@ -48,13 +48,13 @@ class _SudokuScreenContentState extends State<SudokuScreenContent> {
           SudokuScreenStateLoading() => CircularProgressIndicator(),
           SudokuScreenStateSudoku(
             :final sudoku,
-            :final selectedNumber,
+            :final fillNumber,
             :final fillMode,
             :final solved,
           ) =>
             _DataState(
               sudoku: sudoku,
-              selectedNumber: selectedNumber,
+              fillNumber: fillNumber,
               fillMode: fillMode,
               solved: solved,
               onCellTap: vm.fillCell,
@@ -72,7 +72,7 @@ class _SudokuScreenContentState extends State<SudokuScreenContent> {
 
 class _DataState extends StatelessWidget {
   final Puzzle sudoku;
-  final int selectedNumber;
+  final int fillNumber;
   final FillMode fillMode;
   final bool solved;
   final Function(int) onCellTap;
@@ -81,7 +81,7 @@ class _DataState extends StatelessWidget {
 
   const _DataState({
     required this.sudoku,
-    required this.selectedNumber,
+    required this.fillNumber,
     required this.fillMode,
     required this.solved,
     required this.onCellTap,
@@ -97,7 +97,8 @@ class _DataState extends StatelessWidget {
         slivers: [
           SudokuGrid(
             matrix: matrix,
-            selectedNumber: selectedNumber,
+            fillNumber: fillNumber,
+            fillMode: fillMode,
             onTap: onCellTap,
           ),
           SliverList.list(
@@ -106,7 +107,7 @@ class _DataState extends StatelessWidget {
               FillModeSwitcher(currentFillMode: fillMode, onTap: onFillModeTap),
               const SizedBox(height: 20),
               SudokuNumbers(
-                selectedNumber: selectedNumber,
+                fillNumber: fillNumber,
                 onTap: selectFillNumberTap,
               ),
               if (solved) const Text('You solved the Sudoku!'),

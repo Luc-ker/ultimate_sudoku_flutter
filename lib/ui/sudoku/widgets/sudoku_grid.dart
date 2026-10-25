@@ -3,15 +3,20 @@ import 'dart:math';
 import 'package:material_ui/material_ui.dart';
 import 'package:sudoku_api/sudoku_api.dart';
 
+import '../../../models/fill_mode.dart';
+import 'grid_cell.dart';
+
 class SudokuGrid extends StatelessWidget {
   final List<List<Cell>> matrix;
-  final int selectedNumber;
+  final int fillNumber;
+  final FillMode fillMode;
   final Function(int) onTap;
 
   const SudokuGrid({
     super.key,
     required this.matrix,
-    required this.selectedNumber,
+    required this.fillNumber,
+    required this.fillMode,
     required this.onTap,
   });
 
@@ -50,32 +55,18 @@ class SudokuGrid extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           final row = (index / matrix.length).toInt();
           final column = index % matrix.length;
-          final cell = matrix.elementAt(row).elementAt(column);
-          final number = cell.getValue();
           return Container(
             foregroundDecoration: _getBorder(
               row,
               column,
               sqrt(matrix.length).toInt(),
             ),
-            child: Material(
-              color: (number == selectedNumber && number != 0)
-                  ? Colors.grey.shade500
-                  : (cell.prefill() ?? false)
-                  ? Colors.grey.shade300
-                  : Colors.transparent,
-              child: InkWell(
-                splashColor: Colors.indigo,
-                hoverColor: Colors.indigoAccent,
-                focusColor: Colors.indigoAccent,
-                onTap: () => onTap(index),
-                child: Center(
-                  child: Text(
-                    number != 0 ? number.toString() : '',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
+            child: GridCell(
+              cell: matrix.elementAt(row).elementAt(column),
+              cellIndex: index,
+              fillNumber: fillNumber,
+              fillMode: fillMode,
+              onTap: onTap,
             ),
           );
         },

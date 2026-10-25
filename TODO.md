@@ -1,12 +1,7 @@
 # TODO:
 
 ## Core Game functionality
-- Notes
-  - Need to consider that Cell model from api doesn't have a notes field
-    - Could make new StatefulWidget?
-    - Or extend Cell class?
-    - Or even ditch API and re-write from ground up?
-  - Clear when cell is filled
+- Clear cell button
 - No validation until grid fully filled
   - Don't show errors, just show message that there is a mistake
   - If grid is valid, show win message + offer user to play again

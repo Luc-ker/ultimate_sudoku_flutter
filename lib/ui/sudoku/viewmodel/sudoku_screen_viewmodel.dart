@@ -21,7 +21,7 @@ class SudokuScreenViewModel extends ChangeNotifier {
     final currentState = state;
 
     if (currentState is SudokuScreenStateSudoku) {
-      state = currentState.copyWith(selectedNumber: number);
+      state = currentState.copyWith(fillNumber: number);
       notifyListeners();
     }
   }
@@ -39,14 +39,14 @@ class SudokuScreenViewModel extends ChangeNotifier {
     final currentState = state;
 
     if (currentState is SudokuScreenStateSudoku &&
-        currentState.selectedNumber != 0) {
+        currentState.fillNumber != 0) {
       if (currentState.solved) return;
 
       final sudoku = currentState.sudoku;
       final cellPos = Position(index: index);
       if (sudoku.wasCellPrefilled(cellPos)) return;
 
-      final violations = sudoku.fillCell(cellPos, currentState.selectedNumber);
+      final violations = sudoku.fillCell(cellPos, currentState.fillNumber);
       state = currentState.copyWith(sudoku: sudoku);
       if (sudoku.isBoardFullyFilled() && violations.isEmpty) {
         state = currentState.copyWith(solved: true);
