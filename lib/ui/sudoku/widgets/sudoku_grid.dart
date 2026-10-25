@@ -3,20 +3,17 @@ import 'dart:math';
 import 'package:material_ui/material_ui.dart';
 import 'package:sudoku_api/sudoku_api.dart';
 
-import '../../../models/fill_mode.dart';
 import 'grid_cell.dart';
 
 class SudokuGrid extends StatelessWidget {
   final List<List<Cell>> matrix;
   final int fillNumber;
-  final FillMode fillMode;
   final Function(int) onTap;
 
   const SudokuGrid({
     super.key,
     required this.matrix,
     required this.fillNumber,
-    required this.fillMode,
     required this.onTap,
   });
 
@@ -65,7 +62,6 @@ class SudokuGrid extends StatelessWidget {
               cell: matrix.elementAt(row).elementAt(column),
               cellIndex: index,
               fillNumber: fillNumber,
-              fillMode: fillMode,
               onTap: onTap,
             ),
           );

@@ -98,7 +98,6 @@ class _DataState extends StatelessWidget {
           SudokuGrid(
             matrix: matrix,
             fillNumber: fillNumber,
-            fillMode: fillMode,
             onTap: onCellTap,
           ),
           SliverList.list(
@@ -106,13 +105,15 @@ class _DataState extends StatelessWidget {
               const SizedBox(height: 20),
               FillModeSwitcher(currentFillMode: fillMode, onTap: onFillModeTap),
               const SizedBox(height: 20),
-              SudokuNumbers(
-                fillNumber: fillNumber,
-                onTap: selectFillNumberTap,
-              ),
-              if (solved) const Text('You solved the Sudoku!'),
             ],
           ),
+          SudokuNumbers(
+            numberCount: matrix.length,
+            fillNumber: fillNumber,
+            onTap: selectFillNumberTap,
+          ),
+          if (solved)
+            const SliverToBoxAdapter(child: Text('You solved the Sudoku!')),
         ],
       );
     } else {

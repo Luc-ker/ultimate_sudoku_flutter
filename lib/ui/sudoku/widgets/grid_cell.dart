@@ -1,13 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:sudoku_api/sudoku_api.dart';
 
-import '../../../models/fill_mode.dart';
-
-class GridCell extends StatefulWidget {
+class GridCell extends StatelessWidget {
   final Cell cell;
   final int cellIndex;
   final int fillNumber;
-  final FillMode fillMode;
   final Function(int) onTap;
 
   const GridCell({
@@ -15,47 +12,31 @@ class GridCell extends StatefulWidget {
     required this.cell,
     required this.cellIndex,
     required this.fillNumber,
-    required this.fillMode,
     required this.onTap,
   });
 
   @override
-  State<GridCell> createState() => GridCellState();
-}
-
-class GridCellState extends State<GridCell> {
-  List<int> notes = List.empty(growable: true);
-
-  void onNoteInput(int fillNumber) {
-    notes.contains(fillNumber)
-        ? notes.remove(fillNumber)
-        : notes.add(fillNumber);
-    setState(() {});
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final localCell = widget.cell;
-    final number = localCell.getValue();
+    final number = cell.getValue();
 
     return Material(
-      color: (number == widget.fillNumber && number != 0)
+      color: (number == fillNumber && number != 0)
           ? Colors.grey.shade500
-          : (localCell.prefill() ?? false)
+          : (cell.prefill() ?? false)
           ? Colors.grey.shade300
           : Colors.transparent,
       child: InkWell(
         splashColor: Colors.indigo,
         hoverColor: Colors.indigoAccent,
         focusColor: Colors.indigoAccent,
-        onTap: () => (widget.fillMode == FillMode.normal)
-            ? widget.onTap(widget.cellIndex)
-            : onNoteInput(widget.fillNumber),
+        onTap: () => onTap(cellIndex),
         child: number != 0
             ? Center(
                 child: Text(number.toString(), textAlign: TextAlign.center),
               )
-            : SizedBox.expand(child: NoteCell(notes: notes)),
+            : SizedBox.expand(
+                child: NoteCell(notes: cell.getMarkup()?.toList() ?? <int>[]),
+              ),
       ),
     );
   }

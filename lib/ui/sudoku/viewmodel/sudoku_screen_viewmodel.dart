@@ -46,14 +46,32 @@ class SudokuScreenViewModel extends ChangeNotifier {
       final cellPos = Position(index: index);
       if (sudoku.wasCellPrefilled(cellPos)) return;
 
-      final violations = sudoku.fillCell(cellPos, currentState.fillNumber);
-      state = currentState.copyWith(sudoku: sudoku);
-      if (sudoku.isBoardFullyFilled() && violations.isEmpty) {
-        state = currentState.copyWith(solved: true);
+      final cell = sudoku.board()?.cellAt(cellPos);
+      if (currentState.fillNumber == 10) {
+        if (cell == null) return;
+        cell.hasValue() ? cell.setValue(0) : cell.clearMarkup();
+      } else {
+        switch (currentState.fillMode) {
+          case FillMode.normal:
+            final violations = sudoku.fillCell(
+              cellPos,
+              currentState.fillNumber,
+            );
+            if (sudoku.isBoardFullyFilled() && violations.isEmpty) {
+              state = currentState.copyWith(solved: true);
+            }
+          case FillMode.candidate:
+            cell?.addMarkup(currentState.fillNumber);
+        }
       }
+      state = currentState.copyWith(sudoku: sudoku);
       notifyListeners();
     }
   }
+}
+
+extension on Cell {
+  bool hasValue() => (getValue() ?? 0) > 0;
 }
 
 extension on Puzzle {
