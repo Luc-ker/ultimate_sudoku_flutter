@@ -19,7 +19,7 @@ class SudokuScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (BuildContext context) => SudokuScreenViewModel(),
       child: Scaffold(
-        appBar: AppBar(title: Text(title)),
+        appBar: AppBar(),
         body: Center(child: SudokuScreenContent()),
       ),
     );
