@@ -92,14 +92,45 @@ class _DataState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final matrix = sudoku.board()?.matrix();
+    final useColumn = MediaQuery.of(context).size.width <= 600;
     if (matrix != null) {
-      return CustomScrollView(
+      return useColumn
+          ? CustomScrollView(
+              slivers: [
+                SudokuGrid(
+                  matrix: matrix,
+                  fillNumber: fillNumber,
+                  onTap: onCellTap,
+                ),
+                _sudokuOptions(matrix),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(
+                  child: CustomScrollView(
+                    slivers: [
+                      SudokuGrid(
+                        matrix: matrix,
+                        fillNumber: fillNumber,
+                        onTap: onCellTap,
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: CustomScrollView(slivers: [_sudokuOptions(matrix)]),
+                ),
+              ],
+            );
+    } else {
+      return const Text('Sudoku grid couldn\'t be loaded :(');
+    }
+  }
+
+  SliverMainAxisGroup _sudokuOptions(List<List<Cell>> matrix) =>
+      SliverMainAxisGroup(
         slivers: [
-          SudokuGrid(
-            matrix: matrix,
-            fillNumber: fillNumber,
-            onTap: onCellTap,
-          ),
           SliverList.list(
             children: [
               const SizedBox(height: 20),
@@ -116,10 +147,6 @@ class _DataState extends StatelessWidget {
             const SliverToBoxAdapter(child: Text('You solved the Sudoku!')),
         ],
       );
-    } else {
-      return const Text('Sudoku grid couldn\'t be loaded :(');
-    }
-  }
 }
 
 class _ErrorState extends StatelessWidget {
