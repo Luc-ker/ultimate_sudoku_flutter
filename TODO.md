@@ -1,7 +1,6 @@
 # TODO:
 
 ## Core Game functionality
-- Clear cell button
 - No validation until grid fully filled
   - Don't show errors, just show message that there is a mistake
   - If grid is valid, show win message + offer user to play again

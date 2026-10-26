@@ -29,7 +29,8 @@ class SudokuScreenViewModel extends ChangeNotifier {
   void switchFillMode(FillMode fillMode) {
     final currentState = state;
 
-    if (currentState is SudokuScreenStateSudoku) {
+    if (currentState is SudokuScreenStateSudoku &&
+        currentState.fillMode != fillMode) {
       state = currentState.copyWith(fillMode: currentState.fillMode.other);
       notifyListeners();
     }
