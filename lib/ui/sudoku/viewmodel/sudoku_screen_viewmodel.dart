@@ -41,6 +41,7 @@ class SudokuScreenViewModel extends ChangeNotifier {
 
     if (currentState is SudokuScreenStateSudoku &&
         currentState.fillNumber != 0) {
+      final fillNum = currentState.fillNumber;
       if (currentState.solved) return;
 
       final sudoku = currentState.sudoku;
@@ -48,31 +49,42 @@ class SudokuScreenViewModel extends ChangeNotifier {
       if (sudoku.wasCellPrefilled(cellPos)) return;
 
       final cell = sudoku.board()?.cellAt(cellPos);
-      if (currentState.fillNumber == 10) {
-        if (cell == null) return;
+      if (cell == null) return;
+
+      if (fillNum == 10) {
         cell.hasValue() ? cell.setValue(0) : cell.clearMarkup();
       } else {
         switch (currentState.fillMode) {
           case FillMode.normal:
-            final violations = sudoku.fillCell(
-              cellPos,
-              currentState.fillNumber,
-            );
+            final violations = sudoku.fillCell(cellPos, fillNum);
             if (sudoku.isBoardFullyFilled() && violations.isEmpty) {
-              state = currentState.copyWith(solved: true);
+              updateSudokuState(currentState, sudoku, solved: true);
+              return;
             }
           case FillMode.candidate:
-            cell?.addMarkup(currentState.fillNumber);
+            cell.haveMarkup(fillNum)
+                ? cell.removeMarkup(fillNum)
+                : cell.addMarkup(fillNum);
         }
       }
-      state = currentState.copyWith(sudoku: sudoku);
-      notifyListeners();
+      updateSudokuState(currentState, sudoku);
     }
+  }
+
+  void updateSudokuState(
+    SudokuScreenStateSudoku currentState,
+    Puzzle sudoku, {
+    bool solved = false,
+  }) {
+    state = currentState.copyWith(sudoku: sudoku, solved: solved);
+    notifyListeners();
   }
 }
 
 extension on Cell {
   bool hasValue() => (getValue() ?? 0) > 0;
+
+  bool haveMarkup(int num) => getMarkup()?.contains(num) ?? false;
 }
 
 extension on Puzzle {
