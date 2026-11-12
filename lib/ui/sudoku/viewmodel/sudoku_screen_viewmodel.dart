@@ -1,8 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:sudoku_api/sudoku_api.dart';
+import 'package:ultimate_sudoku_flutter/models/fill_mode.dart';
 import 'package:ultimate_sudoku_flutter/ui/sudoku/viewmodel/sudoku_screen_state.dart';
-
-import '../../../models/fill_mode.dart';
+import 'package:ultimate_sudoku_flutter/utils/cell_utils.dart';
+import 'package:ultimate_sudoku_flutter/utils/puzzle_utils.dart';
 
 class SudokuScreenViewModel extends ChangeNotifier {
   var state = SudokuScreenState.loading(sudoku: Puzzle(PuzzleOptions()));
@@ -78,23 +79,5 @@ class SudokuScreenViewModel extends ChangeNotifier {
   }) {
     state = currentState.copyWith(sudoku: sudoku, solved: solved);
     notifyListeners();
-  }
-}
-
-extension on Cell {
-  bool hasValue() => (getValue() ?? 0) > 0;
-
-  bool haveMarkup(int num) => getMarkup()?.contains(num) ?? false;
-}
-
-extension on Puzzle {
-  bool wasCellPrefilled(Position pos) =>
-      board()?.cellAt(pos).prefill() ?? false;
-
-  bool isBoardFullyFilled() {
-    final matrix = board()?.matrix();
-    return (matrix != null)
-        ? !matrix.any((row) => row.any((cell) => cell.getValue() == 0))
-        : false;
   }
 }

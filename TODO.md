@@ -27,6 +27,12 @@
   - Allows you to navigate to settings modal
 - Validate incorrect moves
 - Undo/Redo move
+  - Need to consider different types of moves:
+    - Fill cell value
+    - Fill cell markup
+    - Remove cell markup (could be treated same as clearing markup)
+    - Clear cell value
+    - Clear cell markup
 - Load in preset grid
 - Scan from image (uploaded image then camera)
   - Would prefer to use image processing techniques rather than AI/ML
