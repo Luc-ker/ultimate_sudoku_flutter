@@ -80,4 +80,10 @@ class SudokuScreenViewModel extends ChangeNotifier {
     state = currentState.copyWith(sudoku: sudoku, solved: solved);
     notifyListeners();
   }
+
+  void startNewGame() {
+    state = SudokuScreenState.loading(sudoku: Puzzle(PuzzleOptions()));
+    notifyListeners();
+    generatePuzzle();
+  }
 }

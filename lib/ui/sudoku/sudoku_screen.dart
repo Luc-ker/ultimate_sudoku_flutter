@@ -60,6 +60,7 @@ class _SudokuScreenContentState extends State<SudokuScreenContent> {
               onCellTap: vm.fillCell,
               onFillModeTap: vm.switchFillMode,
               selectFillNumberTap: vm.selectFillNumber,
+              onStartNewGamePressed: vm.startNewGame,
             ),
           SudokuScreenStateError(:final message) => _ErrorState(
             errorMessage: message,
@@ -78,6 +79,7 @@ class _DataState extends StatelessWidget {
   final Function(int) onCellTap;
   final Function(FillMode) onFillModeTap;
   final Function(int) selectFillNumberTap;
+  final VoidCallback onStartNewGamePressed;
 
   const _DataState({
     required this.sudoku,
@@ -87,6 +89,7 @@ class _DataState extends StatelessWidget {
     required this.onCellTap,
     required this.onFillModeTap,
     required this.selectFillNumberTap,
+    required this.onStartNewGamePressed,
   });
 
   @override
@@ -144,7 +147,15 @@ class _DataState extends StatelessWidget {
             onTap: selectFillNumberTap,
           ),
           if (solved)
-            const SliverToBoxAdapter(child: Text('You solved the Sudoku!')),
+            SliverList.list(
+              children: [
+                const Text('You solved the Sudoku!'),
+                FilledButton(
+                  onPressed: onStartNewGamePressed,
+                  child: Text('Start New Game'),
+                ),
+              ],
+            ),
         ],
       );
 }
