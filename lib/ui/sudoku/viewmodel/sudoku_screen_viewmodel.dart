@@ -1,12 +1,31 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:sudoku_api/sudoku_api.dart';
 import 'package:ultimate_sudoku_flutter/models/fill_mode.dart';
+import 'package:ultimate_sudoku_flutter/storage/sudoku_storage.dart';
 import 'package:ultimate_sudoku_flutter/ui/sudoku/viewmodel/sudoku_screen_state.dart';
 import 'package:ultimate_sudoku_flutter/utils/cell_utils.dart';
 import 'package:ultimate_sudoku_flutter/utils/puzzle_utils.dart';
 
 class SudokuScreenViewModel extends ChangeNotifier {
   var state = SudokuScreenState.loading(sudoku: Puzzle(PuzzleOptions()));
+  final sudokuStorage = SudokuStorage();
+
+  Future<void> startGame(bool loadPrevSudoku) async {
+    try {
+      switch (loadPrevSudoku) {
+        case true: loadSudokuFromStorage();
+        case false: generatePuzzle();
+      }
+    } catch (e) {
+      state = SudokuScreenState.error(message: e.toString());
+    }
+  }
+
+  Future<void> loadSudokuFromStorage() async {
+    final json = await sudokuStorage.readSudoku();
+    state = SudokuScreenState.sudoku(sudoku: Puzzle.fromMap(json));
+    notifyListeners();
+  }
 
   Future<void> generatePuzzle() async {
     final currentState = state;
@@ -58,9 +77,14 @@ class SudokuScreenViewModel extends ChangeNotifier {
         switch (currentState.fillMode) {
           case FillMode.normal:
             final violations = sudoku.fillCell(cellPos, fillNum);
-            if (sudoku.isBoardFullyFilled() && violations.isEmpty) {
-              updateSudokuState(currentState, sudoku, solved: true);
-              return;
+            if (violations.isEmpty) {
+              cell.setValidity(
+                fillNum == sudoku.solvedBoard()?.cellAt(cellPos).getValue(),
+              );
+              if (sudoku.isBoardFullyFilled()) {
+                updateSudokuState(currentState, sudoku, solved: true);
+                return;
+              }
             }
           case FillMode.candidate:
             cell.haveMarkup(fillNum)
@@ -85,5 +109,12 @@ class SudokuScreenViewModel extends ChangeNotifier {
     state = SudokuScreenState.loading(sudoku: Puzzle(PuzzleOptions()));
     notifyListeners();
     generatePuzzle();
+  }
+
+  Future<void> saveSudoku() async {
+    final currentState = state;
+    if (currentState is SudokuScreenStateSudoku) {
+      sudokuStorage.writeSudoku(currentState.sudoku.toMap());
+    }
   }
 }

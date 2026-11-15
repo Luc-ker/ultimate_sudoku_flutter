@@ -11,8 +11,8 @@
 ## Features I definitely want
 - Timer
 - Saved Progress
-  - Continue current Sudoku
-  - Save as option?
+  - Auto-save on pressing back?
+  - Manual button atm
 - Reset, Solve, Hint
 - Tap cell before number to edit cell
 - Highlight row, column and box of selected cell

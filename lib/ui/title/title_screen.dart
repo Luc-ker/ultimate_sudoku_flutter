@@ -13,20 +13,37 @@ class TitleScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('The Ultimate Sudoku App'),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SudokuScreen(title: ''),
-                  ),
-                );
-              },
-              child: Text('Press to start!'),
+            _TitleButton(buttonText: 'Press to start!', loadPrevSudoku: false),
+            _TitleButton(
+              buttonText: 'Load previous sudoku',
+              loadPrevSudoku: true,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TitleButton extends StatelessWidget {
+  final String buttonText;
+  final bool loadPrevSudoku;
+
+  const _TitleButton({required this.buttonText, required this.loadPrevSudoku});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                SudokuScreen(title: '', loadPrevSudoku: loadPrevSudoku),
+          ),
+        );
+      },
+      child: Text(buttonText),
     );
   }
 }

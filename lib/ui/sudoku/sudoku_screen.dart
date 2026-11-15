@@ -11,23 +11,23 @@ import 'package:ultimate_sudoku_flutter/ui/sudoku/widgets/sudoku_numbers.dart';
 class SudokuScreen extends StatelessWidget {
   final SudokuScreenViewModel viewModel = SudokuScreenViewModel();
   final String title;
+  final bool loadPrevSudoku;
 
-  SudokuScreen({super.key, required this.title});
+  SudokuScreen({super.key, required this.title, required this.loadPrevSudoku});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (BuildContext context) => SudokuScreenViewModel(),
-      child: Scaffold(
-        appBar: AppBar(),
-        body: Center(child: SudokuScreenContent()),
-      ),
+      child: SudokuScreenContent(loadPrevSudoku: loadPrevSudoku),
     );
   }
 }
 
 class SudokuScreenContent extends StatefulWidget {
-  const SudokuScreenContent({super.key});
+  final bool loadPrevSudoku;
+
+  const SudokuScreenContent({super.key, required this.loadPrevSudoku});
 
   @override
   State<SudokuScreenContent> createState() => _SudokuScreenContentState();
@@ -37,7 +37,7 @@ class _SudokuScreenContentState extends State<SudokuScreenContent> {
   @override
   void initState() {
     super.initState();
-    context.read<SudokuScreenViewModel>().generatePuzzle();
+    context.read<SudokuScreenViewModel>().startGame(widget.loadPrevSudoku);
   }
 
   @override
@@ -61,6 +61,7 @@ class _SudokuScreenContentState extends State<SudokuScreenContent> {
               onFillModeTap: vm.switchFillMode,
               selectFillNumberTap: vm.selectFillNumber,
               onStartNewGamePressed: vm.startNewGame,
+              onSaveTap: vm.saveSudoku,
             ),
           SudokuScreenStateError(:final message) => _ErrorState(
             errorMessage: message,
@@ -80,6 +81,7 @@ class _DataState extends StatelessWidget {
   final Function(FillMode) onFillModeTap;
   final Function(int) selectFillNumberTap;
   final VoidCallback onStartNewGamePressed;
+  final VoidCallback onSaveTap;
 
   const _DataState({
     required this.sudoku,
@@ -90,6 +92,7 @@ class _DataState extends StatelessWidget {
     required this.onFillModeTap,
     required this.selectFillNumberTap,
     required this.onStartNewGamePressed,
+    required this.onSaveTap,
   });
 
   @override
@@ -97,35 +100,38 @@ class _DataState extends StatelessWidget {
     final matrix = sudoku.board()?.matrix();
     final useColumn = MediaQuery.of(context).size.width <= 600;
     if (matrix != null) {
-      return useColumn
-          ? CustomScrollView(
-              slivers: [
-                SudokuGrid(
-                  matrix: matrix,
-                  fillNumber: fillNumber,
-                  onTap: onCellTap,
-                ),
-                _sudokuOptions(matrix),
-              ],
-            )
-          : Row(
-              children: [
-                Expanded(
-                  child: CustomScrollView(
-                    slivers: [
-                      SudokuGrid(
-                        matrix: matrix,
-                        fillNumber: fillNumber,
-                        onTap: onCellTap,
-                      ),
-                    ],
+      return Scaffold(
+        appBar: AppBar(actions: [_SaveButton(onPressed: onSaveTap)]),
+        body: useColumn
+            ? CustomScrollView(
+                slivers: [
+                  SudokuGrid(
+                    matrix: matrix,
+                    fillNumber: fillNumber,
+                    onTap: onCellTap,
                   ),
-                ),
-                Expanded(
-                  child: CustomScrollView(slivers: [_sudokuOptions(matrix)]),
-                ),
-              ],
-            );
+                  _sudokuOptions(matrix),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(
+                    child: CustomScrollView(
+                      slivers: [
+                        SudokuGrid(
+                          matrix: matrix,
+                          fillNumber: fillNumber,
+                          onTap: onCellTap,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: CustomScrollView(slivers: [_sudokuOptions(matrix)]),
+                  ),
+                ],
+              ),
+      );
     } else {
       return const Text('Sudoku grid couldn\'t be loaded :(');
     }
@@ -167,6 +173,20 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text(errorMessage));
+    return Scaffold(appBar: AppBar(), body: Center(child: Text(errorMessage)));
+  }
+}
+
+class _SaveButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _SaveButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: FilledButton(onPressed: onPressed, child: Text('Save')),
+    );
   }
 }
